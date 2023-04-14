@@ -4,7 +4,7 @@ const db_link = 'mongodb+srv://ar739900:V4IzqDRsPY0KXF1x@cluster0.tcshfab.mongod
 
 mongoose.connect(db_link)
     .then(function () {
-        console.log('Database connected');
+        console.log('User Database connected');
     })
     .catch(function (err) {
         console.log(err);
@@ -18,8 +18,8 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        validate:function(){
-           return emailValidator.validate(this.email);
+        validate: function () {
+            return emailValidator.validate(this.email);
         }
     },
     password: {
@@ -31,30 +31,30 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         min: 8,
-        validate:function(){
-            return this.confirmPassword==this.password;
+        validate: function () {
+            return this.confirmPassword == this.password;
         }
     },
-    role:{
+    role: {
         type: String,
-        enum: ['admin','user','restaurantowner','deliveryboy'],
-        default:'user'
+        enum: ['admin', 'user', 'restaurantowner', 'deliveryboy'],
+        default: 'user'
     },
-    profileImage:{
-        type:String,
-        default:'food_app/public/index.html'
+    profileImage: {
+        type: String,
+        default: 'food_app/public/index.html'
     },
-    resetToken:String
+    resetToken: String
 });
-userSchema.pre('save',function(){
-    this.confirmPassword=undefined;
+userSchema.pre('save', function () {
+    this.confirmPassword = undefined;
 });
-userSchema.methods.craeteResetToken = function(){
+userSchema.methods.craeteResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString('hex');
     this.resetToken = resetToken;
     return resetToken
 };
-userSchema.methods.resetPasswordHandler = function(password,confirmPassword){
+userSchema.methods.resetPasswordHandler = function (password, confirmPassword) {
     this.password = password
     this.confirmPassword = confirmPassword
     this.token = undefined

@@ -22,7 +22,7 @@ const planSchema = mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        required: [true, 'price not entered']
     },
     averageRating: {
         type: Number
@@ -31,23 +31,8 @@ const planSchema = mongoose.Schema({
         type: Number,
         validate: [function () {
             return this.discount < 100
-        },'Discount should not exceed 100']
+        }, 'Discount should not exceed 100']
     }
 });
 const planModel = mongoose.model('planModel', planSchema);
-
-(async function createschema() {
-    let planObj = {
-        name: 'Superfood',
-        duration: 30,
-        price:1000,
-        ratingsAverage: 5,
-        discount: 20
-    }
-    let data = await planModel.create(planObj);
-    console.log(data);
-    // const doc —new planModel(plan0bj);
-    // await doc.save();
-})();
-
 module.exports = planModel;

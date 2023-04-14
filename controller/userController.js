@@ -1,54 +1,55 @@
-const userModel = require('../model/uesrmodel_db')
+const userModel = require('../model/uesrmodel')
+
 module.exports.getUser = async function getUser(req, res) {
     let id = req.id;
     let user = await userModel.findById(id);
-    if(user){
+    if (user) {
         res.json(user);
     }
-    else{
+    else {
         res.json({
-            message:'User not found'
+            message: 'User not found'
         })
     }
 };
 module.exports.updateUser = async function updateUser(req, res) {
-    try{
+    try {
         let id = req.params.id;
         let user = await userModel.findById(id);
         let dataToBeUpdated = req.body;
-        if(user){
-            const keys = [];
-            for(let key in dataToBeUpdated){
+        if (user) {
+            let keys = [];
+            for (let key in dataToBeUpdated) {
                 keys.push(key);
             }
-            for(let i = 0;i<keys.length;i++){
-                user[keys[i]]=dataToBeUpdated[keys[i]];
+            for (let i = 0; i < keys.length; i++) {
+                user[keys[i]] = dataToBeUpdated[keys[i]];
             }
             const updatedData = await user.save();
             res.json({
-                message:'data updated successfully',
-                data:user
+                message: 'data updated successfully',
+                data: user
             })
         }
-        else{
+        else {
             res.json({
-                message:'User not found'
+                message: 'User not found'
             });
-        } 
+        }
     }
-    catch(err){
+    catch (err) {
         res.json({
-            message:err.message
+            message: err.message
         })
     }
 };
 module.exports.deleteUser = async function deleteUser(req, res) {
-    try{
+    try {
         let id = req.params.id
         let user = await userModel.findByIdAndDelete(id);
-        if(!user){
+        if (!user) {
             res.json({
-                message:'User Not found'
+                message: 'User Not found'
             })
         }
         res.send({
@@ -56,30 +57,30 @@ module.exports.deleteUser = async function deleteUser(req, res) {
             data: user
         });
     }
-    catch(err){
+    catch (err) {
         res.json({
-            message:err.message
+            message: err.message
         })
     }
 };
 module.exports.getAllUser = async function getAllUser(req, res) {
-    try{
+    try {
         let users = await userModel.find();
-        if(users){
+        if (users) {
             res.json({
-                message:"User retrived",
-                data:users
+                message: "User retrived",
+                data: users
             });
         }
-        else{
+        else {
             res.json({
-                message:'No user found'
+                message: 'No user found'
             })
         }
     }
-    catch(err){
+    catch (err) {
         res.json({
-            message:err.message
+            message: err.message
         })
     }
 };

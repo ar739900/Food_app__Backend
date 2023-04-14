@@ -1,5 +1,5 @@
 const express = require('express');
-const userModel = require('../model/uesrmodel_db');
+const userModel = require('../model/uesrmodel');
 const jwt = require('jsonwebtoken');
 const JWT_KEY = 'ksgkjhsuhskjbs';
 const crypto = require('crypto');
@@ -86,27 +86,25 @@ module.exports.protectRoute = async function protectRoute(req, res, next) {
             token = req.cookies.login;
             console.log(token);
             let payload = jwt.verify(token, JWT_KEY);
-            if(payload){
-                console.log('payload',payload);
+            if (payload) {
                 const user = await userModel.findById(payload.payload);
                 req.role = user.role;
                 req.id = user.id;
-                console.log(req.role,req.id);
                 next();
             }
-            else{
+            else {
                 res.json({
                     message: 'invalid operation'
                 });
             }
         }
-        else{
+        else {
             const client = req.get('User-Agent')
-            if(client.includes('mozilla')==true){
+            if (client.includes('mozilla') == true) {
                 res.redirect('/login')
             }
             res.json({
-                message:'Login required'
+                message: 'Login required'
             });
         }
     }
@@ -116,52 +114,53 @@ module.exports.protectRoute = async function protectRoute(req, res, next) {
         });
     }
 };
-module.exports.forgotPassword = async function forgotPassword(req,res){
-    let {email}=req.body
-    const user = await userModel.findOne({email:email});
-    try{
-        if(user){
+module.exports.forgotPassword = async function forgotPassword(req, res) {
+    let { email } = req.body
+    const user = await userModel.findOne({ email: email });
+    try {
+        if (user) {
             const resetToken = user.createResetToken();
-            let resetPasswordLink = `${req.protocol}://${req.get('host')}/resetpassword/${user._id}`   
+            let resetPasswordLink = `${req.protocol}://${req.get('host')}/resetpassword/${user._id}`
         }
-        else{
+        else {
             res.json({
-                message:'Please Signup'
+                message: 'Please Signup'
             })
         }
     }
-    catch(err){
+    catch (err) {
         res.status(500).json({
-            message:err.message
+            message: err.message
         })
     }
 };
-module.exports.resetPassword = async function resetPassword(req,res){
-    try{
+module.exports.resetPassword = async function resetPassword(req, res) {
+    try {
         const token = req.params.token
-        let {password,confirmPassword} = req.body
-        const user = await userModel.findOne({resetToken:token});
-        if(user){        user.resetPasswordHandler = (password,confirmPassword)
+        let { password, confirmPassword } = req.body
+        const user = await userModel.findOne({ resetToken: token });
+        if (user) {
+            user.resetPasswordHandler = (password, confirmPassword)
             await user.save();
             res.json({
-                message:'User Password Changed Please login again'
+                message: 'User Password Changed Please login again'
             })
         }
-        else{
+        else {
             res.json({
-                message:'user not found'
+                message: 'user not found'
             })
         }
     }
-    catch(err){
+    catch (err) {
         res.json({
-            message:err.message
+            message: err.message
         })
     }
 };
-module.exports.logout = function logout(req,res){
-    res.cookie('login',' ',{maxAge:1});
+module.exports.logout = function logout(req, res) {
+    res.cookie('login', ' ', { maxAge: 1 });
     res.json({
-        message:'User logged out successfully'
+        message: 'User logged out successfully'
     })
 };
